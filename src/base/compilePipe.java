@@ -1,7 +1,6 @@
 package base;
 
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 
@@ -68,16 +67,16 @@ public class compilePipe
 		{
 			return false;
 		}
-		wordHandle word = new wordHandle(inputString, true);
+		wordHandle word = new wordHandle(inputString, false);
 		word.handle();
 		
-		System.out.println(word.getResult().getNodeList());
-		System.out.println(word.getResult().getSymbolList());
+		//System.out.println(word.getResult().getNodeList());
+		//System.out.println(word.getResult().getSymbolList());
 		
 		syntaxHandle syntax = new syntaxHandle(word.getResult());
 		syntax.handle();
-		
-		//wordHandleResult wordResult = word.getResult();
+		syntax.printResult();
+
 		//word.getConstNumberTable();
 		//System.out.println(word.getResult().getConstNumberTable());
 		//System.out.println(word.getResult().gerVarNameTable());

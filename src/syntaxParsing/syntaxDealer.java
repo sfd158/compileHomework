@@ -12,17 +12,34 @@ public class syntaxDealer
 	protected int sym_place;
 	protected final wordHandleResult wordRes;
 	protected final ArrayList<nodeClass> nodeList;
+	protected final ArrayList<String> symbolList;
 	protected boolean hasMoreToken = true;
+	protected StringBuilder build = new StringBuilder();
+	protected boolean isPrint = true;
+	protected int doingStrap = 0;
+	protected int callingStrap = 0;
+	protected int advanceStrap = 0;
+	public String toJson()
+	{
+		return build.toString();
+	}
 	public syntaxDealer(final wordHandleResult _result)
 	{
 		wordRes = _result;
 		nodeList = wordRes.getNodeList();
+		symbolList = wordRes.getSymbolList();
 		sym_place = 0;
 		sym = nodeList.get(sym_place);
 	}
 
 	protected void Advance() throws compileException
 	{
+		if(isPrint)
+		{
+			build.append("\"advance\": \"");
+			build.append(symbolList.get(sym_place));
+			build.append("\",\n");
+		}
 		if(sym_place+1 < nodeList.size())
 		{
 			sym = nodeList.get(++sym_place);
@@ -35,13 +52,24 @@ public class syntaxDealer
 	}
 	protected void Program() throws compileException
 	{
-		//correct
+		if(isPrint)
+		{
+			build.append("{\n");
+			build.append("\"doing\": \"Program\",\n");
+		}
 		PartProgram();
 		if(sym.getNodeType() != nodeClass.SYM_dot)
 		{
 			throw new compileException("The end of Program is not a single dot. at" + sym_place);
 		}
-		else Advance();
+		else 
+		{
+			Advance();
+			if(isPrint)
+			{
+				build.append("}\n");
+			}
+		}
 		if (hasMoreToken)
 		{
 			throw new compileException("Exist elements after final dot '.'");
@@ -49,7 +77,11 @@ public class syntaxDealer
 	}
 	protected void PartProgram() throws compileException
 	{
-		//correct
+		if(isPrint)
+		{
+			build.append("\"call\":{\n");
+			build.append("\"doing\": \"PartProgram\",\n");
+		}
 		if (sym.getNodeType() == nodeClass.SYM_const)
 		{
 			ConstExplain();
@@ -63,14 +95,26 @@ public class syntaxDealer
 			ProcedureExplain();
 		}
 		Statement();
+		if(isPrint)
+		{
+			build.append("},\n");
+		}
 	}
 	protected void ConstExplain() throws compileException
 	{
+		if(isPrint)
+		{
+			build.append("\"call\":{\n");
+			build.append("\"doing\": \"ConstExplain\",\n");
+		}
 		if(sym.getNodeType() != nodeClass.SYM_const)
 		{
 			throw new compileException("In const explain: 'const' not found.");
 		}
-		else Advance();
+		else
+		{
+			Advance();
+		}
 		ConstDefine();
 		while(sym.getNodeType() == nodeClass.SYM_comma)
 		{
@@ -82,9 +126,18 @@ public class syntaxDealer
 			throw new compileException("The end of const explain is not ';'");
 		}
 		Advance();
+		if(isPrint)
+		{
+			build.append("},\n");
+		}
 	}
 	protected void VaribleExplain() throws compileException
 	{
+		if(isPrint)
+		{
+			build.append("\"call\":{\n");
+			build.append("\"doing\": \"VaribleExplain\",\n");
+		}
 		if(sym.getNodeType() != nodeClass.SYM_var)
 		{
 			throw new compileException("");
@@ -101,9 +154,18 @@ public class syntaxDealer
 			throw new compileException("The end of var explain is not ';'");
 		}
 		Advance();
+		if(isPrint)
+		{
+			build.append("},\n");
+		}
 	}
 	protected void ProcedureExplain() throws compileException
 	{
+		if(isPrint)
+		{
+			build.append("\"call\":{\n");
+			build.append("\"doing\": \"ProcedureExplain\",\n");
+		}
 		ProcedureBegin();
 		PartProgram();
 		if(sym.getNodeType() != nodeClass.SYM_semicolon)
@@ -115,9 +177,18 @@ public class syntaxDealer
 		{
 			ProcedureExplain();
 		}
+		if(isPrint)
+		{
+			build.append("},\n");
+		}
 	}
 	protected void Statement() throws compileException
 	{
+		if(isPrint)
+		{
+			build.append("\"call\":{\n");
+			build.append("\"doing\": \"Statement\",\n");
+		}
 		switch(sym.getNodeType())
 		{
 		case nodeClass.varNameType:
@@ -144,9 +215,18 @@ public class syntaxDealer
 		default:
 			break;//null
 		}
+		if(isPrint)
+		{
+			build.append("},\n");
+		}
 	}
 	protected void ConstDefine() throws compileException
 	{
+		if(isPrint)
+		{
+			build.append("\"call\":{\n");
+			build.append("\"doing\": \"ConstDefine\",\n");
+		}
 		Identifier();
 		if(sym.getNodeType() != nodeClass.SYM_equal)
 		{
@@ -154,25 +234,52 @@ public class syntaxDealer
 		}
 		Advance();
 		UnsignedInteger();
+		if(isPrint)
+		{
+			build.append("},\n");
+		}
 	}
 	protected void Identifier() throws compileException
 	{
+		if(isPrint)
+		{
+			build.append("\"call\":{\n");
+			build.append("\"doing\": \"Identifier\",\n");
+		}
 		if(!sym.isNodeTypeVarName())
 		{
 			throw new compileException("Format of Varible name wrong.");
 		}
 		Advance();
+		if(isPrint)
+		{
+			build.append("},\n");
+		}
 	}
 	protected void UnsignedInteger() throws compileException
 	{
+		if(isPrint)
+		{
+			build.append("\"call\":{\n");
+			build.append("\"doing\": \"UnsignedInteger\",\n");
+		}
 		if(!sym.isNodeTypeInt())
 		{
 			throw new compileException("Format of Unsigned Integer wrong.");
 		}
 		Advance();
+		if(isPrint)
+		{
+			build.append("},\n");
+		}
 	}
 	protected void ProcedureBegin() throws compileException
 	{
+		if(isPrint)
+		{
+			build.append("\"call\":{\n");
+			build.append("\"doing\": \"ProcedureBegin\",\n");
+		}
 		if(sym.getNodeType() != nodeClass.SYM_procedure)
 		{
 			throw new compileException("Procedure Begin Format Wrong.");
@@ -184,9 +291,18 @@ public class syntaxDealer
 			throw new compileException("Procedure Begin Format Wrong. semicolon miss.");
 		}
 		Advance();
+		if(isPrint)
+		{
+			build.append("},\n");
+		}
 	}
 	protected void AssignStatement() throws compileException
 	{
+		if(isPrint)
+		{
+			build.append("\"call\":{\n");
+			build.append("\"doing\": \"AssignStatement\",\n");
+		}
 		Identifier();
 		if(sym.getNodeType() != nodeClass.SYM_assign)
 		{
@@ -194,14 +310,18 @@ public class syntaxDealer
 		}
 		Advance();
 		Expression();
-		//if(sym.getNodeType() != nodeClass.SYM_semicolon)
-		//{
-		//	throw new compileException("Assignment Format Wrong");
-		//}
-		//Advance();
+		if(isPrint)
+		{
+			build.append("},\n");
+		}
 	}
 	protected void Condition() throws compileException
 	{
+		if(isPrint)
+		{
+			build.append("\"call\":{\n");
+			build.append("\"doing\": \"Condition\",\n");
+		}
 		if(sym.getNodeType() == nodeClass.SYM_odd)
 		{
 			Advance();
@@ -213,10 +333,19 @@ public class syntaxDealer
 			RelationOperator();
 			Expression();
 		}
+		if(isPrint)
+		{
+			build.append("},\n");
+		}
 	}
 	
 	protected void ConditionStatement() throws compileException
 	{
+		if(isPrint)
+		{
+			build.append("\"call\":{\n");
+			build.append("\"doing\": \"ConditionStatement\",\n");
+		}
 		if(sym.getNodeType() != nodeClass.SYM_if)
 		{
 			throw new compileException("'if' miss.");
@@ -229,9 +358,18 @@ public class syntaxDealer
 		}
 		Advance();
 		Statement();
+		if(isPrint)
+		{
+			build.append("},\n");
+		}
 	}
 	protected void WhileLoopStatement() throws compileException
 	{
+		if(isPrint)
+		{
+			build.append("\"call\":{\n");
+			build.append("\"doing\": \"WhileLoopStatement\",\n");
+		}
 		if(sym.getNodeType() != nodeClass.SYM_while)
 		{
 			throw new compileException("While Loop statement Format wrong: 'while' miss");
@@ -244,18 +382,36 @@ public class syntaxDealer
 		}
 		Advance();
 		Statement();
+		if(isPrint)
+		{
+			build.append("},\n");
+		}
 	}
 	protected void ProcedureCallingStatement() throws compileException
 	{
+		if(isPrint)
+		{
+			build.append("\"call\":{\n");
+			build.append("\"doing\": \"ProcedureCallingStatement\",\n");
+		}
 		if (sym.getNodeType() != nodeClass.SYM_call)
 		{
 			throw new compileException("call error.");
 		}
 		Advance();
 		Identifier();
+		if(isPrint)
+		{
+			build.append("},\n");
+		}
 	}
 	protected void ReadStatement() throws compileException
 	{
+		if(isPrint)
+		{
+			build.append("\"call\":{\n");
+			build.append("\"doing\": \"ReadStatement\",\n");
+		}
 		if(sym.getNodeType() != nodeClass.SYM_read)
 		{
 			throw new compileException("is not a read statement.");
@@ -277,9 +433,18 @@ public class syntaxDealer
 			throw new compileException("in read statement, right bracket miss.");
 		}
 		Advance();
+		if(isPrint)
+		{
+			build.append("},\n");
+		}
 	}
 	protected void WriteStatement() throws compileException
 	{
+		if(isPrint)
+		{
+			build.append("\"call\":{\n");
+			build.append("\"doing\": \"WriteStatement\",\n");
+		}
 		if(sym.getNodeType() != nodeClass.SYM_write)
 		{
 			throw new compileException("is not a write statement.");
@@ -301,9 +466,18 @@ public class syntaxDealer
 			throw new compileException("in write statement, right bracket miss.");
 		}
 		Advance();
+		if(isPrint)
+		{
+			build.append("},\n");
+		}
 	}
 	protected void CombinationStatement() throws compileException
 	{
+		if(isPrint)
+		{
+			build.append("\"call\":{\n");
+			build.append("\"doing\": \"CombinationStatement\",\n");
+		}
 		if(sym.getNodeType() != nodeClass.SYM_begin)
 		{
 			throw new compileException("Begin missing.");
@@ -324,20 +498,18 @@ public class syntaxDealer
 			}
 		}
 		Advance();
-		//Statement();
-		//while(sym.getNodeType() == nodeClass.SYM_semicolon)
-		//{
-		//	Advance();
-		//	Statement();
-		//}
-		//if(sym.getNodeType() != nodeClass.SYM_end)
-		//{
-		//	throw new compileException("End missing. at" + sym_place);
-		//}
-		//Advance();
+		if(isPrint)
+		{
+			build.append("},\n");
+		}
 	}
 	protected void Expression() throws compileException
 	{
+		if(isPrint)
+		{
+			build.append("\"call\":{\n");
+			build.append("\"doing\": \"Expression\",\n");
+		}
 		if(sym.getNodeType() == nodeClass.SYM_add || sym.getNodeType() == nodeClass.SYM_minus)
 		{
 			AddOrSubOperator();
@@ -349,9 +521,18 @@ public class syntaxDealer
 			AddOrSubOperator();
 			Item();
 		}
+		if(isPrint)
+		{
+			build.append("},\n");
+		}
 	}
 	protected void RelationOperator() throws compileException
 	{
+		if(isPrint)
+		{
+			build.append("\"call\":{\n");
+			build.append("\"doing\": \"RelationOperator\",\n");
+		}
 		switch(sym.getNodeType())
 		{
 		case nodeClass.SYM_equal:
@@ -365,19 +546,37 @@ public class syntaxDealer
 		default:
 			throw new compileException("Wrong Relation Operator.");
 		}
+		if(isPrint)
+		{
+			build.append("},\n");
+		}
 	}
 	
 	protected void Item() throws compileException //Ïî
 	{
+		if(isPrint)
+		{
+			build.append("\"call\":{\n");
+			build.append("\"doing\": \"Item\",\n");
+		}
 		Factor();
 		while(sym.getNodeType() == nodeClass.SYM_mul || sym.getNodeType() == nodeClass.SYM_div)
 		{
 			MulOrDivOperator();
 			Factor();
 		}
+		if(isPrint)
+		{
+			build.append("},\n");
+		}
 	}
 	protected void Factor() throws compileException //Òò×Ó
 	{
+		if(isPrint)
+		{
+			build.append("\"call\":{\n");
+			build.append("\"doing\": \"Factor\",\n");
+		}
 		switch(sym.getNodeType())
 		{
 		case nodeClass.varNameType:
@@ -398,21 +597,43 @@ public class syntaxDealer
 		default:
 			throw new compileException("Not a factor.");
 		}
+		if(isPrint)
+		{
+			build.append("},\n");
+		}
 	}
 	protected void MulOrDivOperator() throws compileException
 	{
+		if(isPrint)
+		{
+			build.append("\"call\":{\n");
+			build.append("\"doing\": \"MulOrDivOperator\",\n");
+		}
 		if(sym.getNodeType() != nodeClass.SYM_mul && sym.getNodeType() != nodeClass.SYM_div)
 		{
 			throw new compileException("Format of Multiply or Divide Operator Wrong");
 		}
 		Advance();
+		if(isPrint)
+		{
+			build.append("},\n");
+		}
 	}
 	protected void AddOrSubOperator() throws compileException
 	{
+		if(isPrint)
+		{
+			build.append("\"call\":{\n");
+			build.append("\"doing\": \"AddOrSubOperator\",\n");
+		}
 		if(sym.getNodeType() != nodeClass.SYM_add && sym.getNodeType() != nodeClass.SYM_minus)
 		{
 			throw new compileException("Format of Add or Minus Operator Wrong");
 		}
 		Advance();
+		if(isPrint)
+		{
+			build.append("},\n");
+		}
 	}
 }
