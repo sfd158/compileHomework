@@ -1,12 +1,13 @@
 package syntaxParsing;
 
-import WordHandle.wordHandleResult;
-import base.compileException;
-import base.handleType;
+import java.util.ArrayList;
 
-public class syntaxHandle implements handleType
+import WordHandle.wordHandleResult;
+import base.commandClass;
+import base.compileException;
+
+public class syntaxHandle
 {
-	//protected final wordHandleResult wordRes;
 	//wordhandle符号表废了，因为没有层次，再重新构建
 	//输入是词法分析处理后的单词
 	private boolean printHandleResult;
@@ -18,11 +19,13 @@ public class syntaxHandle implements handleType
 	}
 	public syntaxHandle(final wordHandleResult _wordResult, final boolean _printHandleResult)
 	{
-		//wordRes = _wordResult;
 		printHandleResult = _printHandleResult;
 		deal = new syntaxDealer(_wordResult);
 	}
-
+	public ArrayList<commandClass> getCommands()
+	{
+		return deal.getCommands();
+	}
 	public boolean handle()
 	{
 		try
@@ -41,7 +44,6 @@ public class syntaxHandle implements handleType
 	}
 	public void printResult()
 	{
-		//System.out.println(deal.toJson());
 		System.out.println(toJson());
 	}
 	public String toJson()
@@ -62,10 +64,6 @@ public class syntaxHandle implements handleType
 			if(i<t.length() && t.charAt(i)=='}')
 			{
 				p1++;
-			}
-			if(i>13400)
-			{
-				i=i+1-1;
 			}
 			for(int j=p1;j<i;j++)
 			{

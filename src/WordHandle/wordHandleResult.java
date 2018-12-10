@@ -29,7 +29,7 @@ public class wordHandleResult
 	{
 		return constNumberTable;
 	}
-	public final TreeMap<String, Integer> gerVarNameTable()
+	public final TreeMap<String, Integer> getVarNameTable()
 	{
 		return varNameTable;
 	}

@@ -3,9 +3,8 @@ package WordHandle;
 import java.util.StringTokenizer;
 
 import base.compileException;
-import base.handleType;
 
-public class wordHandle implements handleType
+public class wordHandle
 {	
 	private int nowInCurrentLineCount = 0;
 	
@@ -46,6 +45,11 @@ public class wordHandle implements handleType
 			return currentLine.charAt(nowInCurrentLineCount);
 		}
 		else return '\0';
+	}
+	
+	private void pushBackChar()
+	{
+		nowInCurrentLineCount--;
 	}
 	
 	private char getCurrentCharAndGetChar()
@@ -158,6 +162,7 @@ public class wordHandle implements handleType
 						{
 							throw new compileException("':' is not followed by '=' ");
 						}
+						pushBackChar();
 					}
 					else tarPunc += c2;
 					break;
@@ -175,7 +180,6 @@ public class wordHandle implements handleType
 		}
 	}
 	
-	@Override
 	public boolean handle()//处理所有的输入
 	{
 		int nowLineCount = 0, outputItemCount = 0;
@@ -207,7 +211,6 @@ public class wordHandle implements handleType
 		return true;
 	}
 	
-	@Override
 	public void printResult()
 	{
 		outputItem.output(result.symbolList, result.nodeList);

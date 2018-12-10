@@ -6,18 +6,11 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.TreeMap;
 
-public class nodeClass
+public class nodeClass extends base.allSymType
 {
 	public final int nodeType;
 	public final Integer nodeValue;
 	
-	public static final int intType=0,varNameType=1,SYM_const=2,SYM_var=3,SYM_procedure=4,SYM_begin=5,
-			SYM_end=6,SYM_odd=7,SYM_if=8,SYM_then=9,SYM_call=10,SYM_while=11,SYM_do=12,SYM_read=13,
-			SYM_write=14,SYM_dot=15,SYM_comma=16,SYM_semicolon=17,SYM_equal=18,SYM_add=19,SYM_minus=20,
-			SYM_mul=21,SYM_div=22,SYM_pound=23,SYM_le=24,SYM_ge=25,SYM_left=26,SYM_right=27,
-			SYM_assign=28,SYM_leq=29,SYM_geq=30;
-
-	//(".",",",";","=","+","-","*","/","#","<",">","(",")",":=","<=",">=")
 	protected static TreeMap<String, Integer> reservedWord = new TreeMap<String, Integer>();
 	protected static List<String> keyWordList, puncList;
 	protected static TreeMap<String, Integer> Punctuation = new TreeMap<String, Integer>();
@@ -66,7 +59,7 @@ public class nodeClass
 		}
 	}
 	
-	public static void printReservedWordTable()
+	public static String getReservedWordTable()
 	{
 		StringBuffer buffer = new StringBuffer();
 		int printCnt = 0;
@@ -80,10 +73,15 @@ public class nodeClass
 			if((++printCnt) % 5 == 0)
 				buffer.append('\n');
 		}
-		System.out.println(buffer.toString());
+		return buffer.toString();
 	}
 	
-	public static void printPunctuationTable()
+	public static String getNameByType(final int type)
+	{
+		return idOfName.get(type);
+	}
+	
+	public static String printPunctuationTable()
 	{
 		StringBuilder build = new StringBuilder();
 		for(Iterator<Entry<Integer, String>> iter=idOfName.entrySet().iterator(); iter.hasNext();)
@@ -94,7 +92,7 @@ public class nodeClass
 			build.append(entry.getKey());
 			build.append('\n');
 		}
-		System.out.println(build.toString());
+		return build.toString();
 	}
 	
 	static

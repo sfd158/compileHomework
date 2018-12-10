@@ -5,6 +5,7 @@ import java.io.FileReader;
 import java.io.IOException;
 
 import WordHandle.wordHandle;
+import explainRun.interpreter;
 import syntaxParsing.syntaxHandle;
 
 public class compilePipe
@@ -49,15 +50,12 @@ public class compilePipe
 			e.printStackTrace();
 			return false;
 		}
-		//File f = new File(filename);
-		//char[] buffer = new char[(int) f.length()];
-		//note: '\r' is not supported in this file.
 		inputString = buffer.toString();
 		if(!caseSensitive)
 		{
 			inputString.toLowerCase();
 		}
-		//System.out.print(inputString);
+		//System.out.println(inputString);
 		return true;
 	}
 	
@@ -70,17 +68,11 @@ public class compilePipe
 		wordHandle word = new wordHandle(inputString, false);
 		word.handle();
 		
-		//System.out.println(word.getResult().getNodeList());
-		//System.out.println(word.getResult().getSymbolList());
-		
 		syntaxHandle syntax = new syntaxHandle(word.getResult());
 		syntax.handle();
-		syntax.printResult();
 
-		//word.getConstNumberTable();
-		//System.out.println(word.getResult().getConstNumberTable());
-		//System.out.println(word.getResult().gerVarNameTable());
-		
+		interpreter expAndRun = new interpreter(syntax.getCommands());
+		expAndRun.run();
 		return true;
 	}
 	
