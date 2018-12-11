@@ -55,7 +55,6 @@ public class compilePipe
 		{
 			inputString.toLowerCase();
 		}
-		//System.out.println(inputString);
 		return true;
 	}
 	

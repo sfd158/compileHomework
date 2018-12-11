@@ -143,9 +143,10 @@ public class syntaxDealer
 		{
 			ConstExplain();
 		}
+		int varCount = 0;
 		if (sym.getNodeType() == nodeClass.SYM_var)
 		{
-			VaribleExplain();
+			varCount = VaribleExplain();
 		}
 		if (sym.getNodeType() == nodeClass.SYM_procedure)
 		{
@@ -156,8 +157,7 @@ public class syntaxDealer
 		backPatchPlace = commands.size() - 1;
 		stackUseCnt = 0;
 		Statement();
-		//TODO
-		commands.get(backPatchPlace).aCode = maxUseCnt;
+		commands.get(backPatchPlace).aCode = varCount;//maxUseCnt + varCount;
 		commands.add(new commandClass(commandClass.OPR_com,0,0));
 		if(isPrint)
 		{
@@ -197,7 +197,7 @@ public class syntaxDealer
 		}
 	}
 	
-	protected void VaribleExplain() throws compileException
+	protected int VaribleExplain() throws compileException
 	{
 		if(isPrint)
 		{
@@ -229,6 +229,7 @@ public class syntaxDealer
 		{
 			build.append("},\n");
 		}
+		return varCnt;
 	}
 	
 	protected void ProcedureExplain() throws compileException
@@ -497,7 +498,7 @@ public class syntaxDealer
 		}
 		Advance();
 		Statement();
-		commands.get(backPatchPlace).lCode = commands.size();
+		commands.get(backPatchPlace).aCode = commands.size();
 		if(isPrint)
 		{
 			build.append("},\n");
